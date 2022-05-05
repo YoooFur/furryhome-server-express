@@ -1,0 +1,32 @@
+{
+  "name": "furryhome-server-express",
+  "version": "1.0.0",
+  "description": "Furryhome Server-Side Express & Mongo Ver.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "cross-env NODE_ENV=development node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/colour93/furryhome-server-express.git"
+  },
+  "keywords": [
+    "Furryhome",
+    "福瑞之家",
+    "express"
+  ],
+  "author": "colour93",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/colour93/furryhome-server-express/issues"
+  },
+  "homepage": "https://github.com/colour93/furryhome-server-express#readme",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "cross-env": "^7.0.3",
+    "express": "^4.18.1",
+    "mongoose": "^6.3.2",
+    "morgan": "^1.10.0"
+  }
+}
