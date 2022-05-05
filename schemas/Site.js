@@ -22,9 +22,18 @@ module.exports = model('Site', new Schema({
         siteFavicon: String,
         siteUrl: String,
         siteParam: String,
-        siteViews: Number,
-        siteLikes: Number,
-        siteCreateTime: Date,
-        active: Boolean
+        siteViews: {
+            type: Number,
+            default: 0
+        },
+        siteLikes: {
+            type: Number,
+            default: 0
+        },
+        siteCreateTime: {
+            type: Date,
+            default: new Date()
+        },
+        // active: Boolean
     }]
 }))

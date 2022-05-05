@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "cross-env NODE_ENV=development node app.js"
+    "dev": "cross-env NODE_ENV=development node app.js",
+    "nodemon": "nodemon --exec 'npm run dev'"
   },
   "repository": {
     "type": "git",

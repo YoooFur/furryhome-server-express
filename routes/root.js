@@ -21,5 +21,14 @@ router.get('/', (req, res) => {
 
 router.get('/site/list', siteCtrl.getSiteList);
 
+router.get('/site/search', siteCtrl.searchSites);
+
+router.get('/site/:id', siteCtrl.getSiteById);
+
+router.get('/site/cate/list', siteCtrl.getSiteCateList);
+
+router.get('/site/cate/:id', siteCtrl.getSiteCateById);
+
+
 
 module.exports = router;
