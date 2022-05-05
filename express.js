@@ -8,6 +8,10 @@ const express = require('express');
 const http = require('http');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+
+const redis = require('./redis');
 
 // 初始化
 console.log("初始化 Express");
@@ -18,21 +22,33 @@ const router = require('./routes');
 // 配置文件
 const config = require('./config.json').express;
 
-const port = (config.port || 3000);
+let port;
+
+if (config) {
+    port = (config.port || 9393);
+} else {
+    port = 9393;
+}
+
 
 // 初始化 Express 实例
 const app = express();
 
 // 使用数据处理中间件
 app.use(bodyParser.json());
-
-// 设置路由
-app.use(router);
+app.use(cookieParser());
+app.use(session({
+    secret: config.secret,
+    store: redis.sessionStore
+}))
 
 // 调试输出
 if (process.env.dev) {
-    app.use(logger(':method :url :status :res[content-length] - :response-time ms'));
+    app.use(logger('dev'));
 }
+
+// 设置路由
+app.use(router);
 
 // 设置端口
 console.log(`Epxress 运行于 ${port}`);

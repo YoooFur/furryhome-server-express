@@ -1,6 +1,6 @@
 /**
  * FurryHome 福瑞之家导航 Server-Side App
- * Express & Mongo Ver.
+ * Express & Mongo & Redis Ver.
  * Author: 玖叁 @colour93 (https://github.com/colour93)
  * 
  *      ______                      __  __                   
@@ -16,5 +16,22 @@
 require('./preload');
 
 // 初始化
-const mongo = require('./mongo');
-const express = require('./express');
+init();
+
+async function init () {
+
+    // 先初始化redis
+    const redis = require('./redis');
+    await redis.connect();
+
+    // 继而初始化mongo
+    const mongo = require('./mongo');
+    await mongo.connect();
+
+    // 最后初始化express
+    const express = require('./express');
+
+    // 挂载退出监控
+    require('./exit');
+}
+

@@ -207,7 +207,7 @@ module.exports = {
      * @param {Request} req 
      * @param {Response} res 
      */
-     getSiteCateById: async (req, res) => {
+    getSiteCateById: async (req, res) => {
 
         // 获取请求路径参数
         const id = parseInt(req.params.id);
@@ -235,4 +235,173 @@ module.exports = {
             data: info
         })
     },
+
+    /**
+     * 数据统计操作 类
+     * 
+     * 这里有优化空间，但是我懒
+     * 
+     */
+    stats: {
+
+        /**
+         * 喜欢
+         * @param {Request} req 
+         * @param {Response} res 
+         */
+        async like (req, res) {
+
+            // 获取并判断siteId
+            const {siteId} = req.query;
+
+            if (isNaN(siteId)) {
+                res.send({
+                    code: -400,
+                    msg: "参数错误"
+                })
+                return;
+            }
+
+            // 判断是否点过赞
+            if (req.session.like[siteId]) {
+                res.send({
+                    code: -401,
+                    msg: "已经喜欢过了哦"
+                })
+                return;
+            }
+
+            // 查找并自增
+            r = await Site.findOneAndUpdate({
+                "siteList": {
+                    "$elemMatch": {
+                        "siteId": siteId
+                    }
+                }
+            },{
+                "$inc": {
+                    "siteList.$.siteLikes": 1
+                }
+            },{
+                new: true,
+                multi: false
+            })
+
+            let respData = {};
+
+            // 判断返回文档
+            if (!r) {
+                respData = {
+                    code: 404,
+                    msg: "没有找到对应站点"
+                }
+            } else {
+
+                // 简单粗暴的返回data重构
+                const {cateId, cateName, cateIcon, cateIntro} = r;
+                let cate = {cateId, cateName, cateIcon, cateIntro};
+                let site = {};
+                for (let i = 0; i < r.siteList.length; i++) {
+                    const siteItem = r.siteList[i];
+                    if (siteItem.siteId == siteId) {
+                        site = siteItem;
+                        break;
+                    }
+                }
+                respData = {
+                    code: 200,
+                    msg: null,
+                    data: {
+                        cate,
+                        site
+                    }
+                }
+            }
+
+            req.session.like[siteId] = true;
+
+            res.send(respData);
+
+        },
+
+        /**
+         * 浏览
+         * @param {Request} req 
+         * @param {Response} res 
+         */
+        async view (req, res) {
+
+            // 判断siteId
+            const {siteId} = req.query;
+
+            if (isNaN(siteId)) {
+                res.send({
+                    code: -400,
+                    msg: "参数错误"
+                })
+                return;
+            }
+
+            // 判断是否浏览过
+            if (req.session.view[siteId]) {
+                res.send({
+                    code: -401,
+                    msg: "已经浏览过了哦"
+                })
+                return;
+            }
+
+            // 更新数据
+            r = await Site.findOneAndUpdate({
+                "siteList": {
+                    "$elemMatch": {
+                        "siteId": siteId
+                    }
+                }
+            },{
+                "$inc": {
+                    "siteList.$.siteViews": 1
+                }
+            }, {
+                new: true
+            })
+
+            let respData = {};
+
+            // 判断返回文档
+            if (!r) {
+                respData = {
+                    code: 404,
+                    msg: "没有找到对应站点"
+                }
+            } else {
+
+                // 简单粗暴的返回data重构
+                const {cateId, cateName, cateIcon, cateIntro} = r;
+                let cate = {cateId, cateName, cateIcon, cateIntro};
+                let site = {};
+                for (let i = 0; i < r.siteList.length; i++) {
+                    const siteItem = r.siteList[i];
+                    if (siteItem.siteId == siteId) {
+                        site = siteItem;
+                        break;
+                    }
+                }
+                respData = {
+                    code: 200,
+                    msg: null,
+                    data: {
+                        cate,
+                        site
+                    }
+                }
+            }
+
+            req.session.view[siteId] = true;
+
+            res.send(respData);
+
+        }
+
+    }
 }
