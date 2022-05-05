@@ -2,6 +2,13 @@
  * Sites
  */
 
+/**
+ * 2022/5/5
+ * 下午睡觉的时候突然记起这个数据库设计有什么坑来着
+ * 现在想不起来了
+ * 想起来再写注释吧
+ */
+
 const {Schema, model} = require('mongoose');
 
 module.exports = model('Site', new Schema({
@@ -13,14 +20,26 @@ module.exports = model('Site', new Schema({
     cateIcon: String,
     cateIntro: String,
     siteList: [{
-        siteName: String,
+        siteName: {
+            type: String,
+            required: true
+        },
         siteId: {
             type: Number,
             unique: true
         },
-        siteIntro: String,
-        siteFavicon: String,
-        siteUrl: String,
+        siteIntro: {
+            type: String,
+            default: "还没有简介欸"
+        },
+        siteFavicon: {
+            type: String,
+            default: "https://default.ico"
+        },
+        siteUrl: {
+            type: String,
+            required: true
+        },
         siteParam: String,
         siteViews: {
             type: Number,

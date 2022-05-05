@@ -6,6 +6,7 @@
 
 // 引入类型
 const { Request, Response } = require('express');
+const { default: mongoose } = require('mongoose');
 
 // 引入数据模型
 const Site = require('../schemas/Site');
@@ -27,12 +28,66 @@ module.exports = {
             "_id": 0
         })
 
+        let resultList = [];
+
+        // 获取喜欢状态
+        // 一个交叉双循环
+
+        // 遍历分类
+        for (let i = 0; i < list.length; i++) {
+            const {
+                cateId,
+                cateName,
+                cateIcon,
+                cateIntro,
+                siteList
+            } = list[i];
+
+            // qtmd proxy
+            let tempSiteList = [];
+            
+            // 遍历站点
+            for (let j = 0; j < siteList.length; j++) {
+                const {
+                    siteId,
+                    siteName,
+                    siteIntro,
+                    siteFavicon,
+                    siteUrl,
+                    siteParam,
+                    siteLikes,
+                    siteViews,
+                    siteCreateTime
+                } = siteList[j];
+
+                tempSiteList.push({
+                    siteId,
+                    siteName,
+                    siteIntro,
+                    siteFavicon,
+                    siteUrl,
+                    siteParam,
+                    siteLikes,
+                    siteViews,
+                    siteCreateTime,
+                    liked: req.session.like[siteId] ? true : false
+                })
+            }
+
+            resultList.push({
+                cateId,
+                cateName,
+                cateIcon,
+                cateIntro,
+                siteList: tempSiteList
+            })
+        }
+
         // 响应
         res.send({
             code: 200,
             msg: null,
-            data: list,
-            furryhome: "made-with-love-by-colour93"
+            data: resultList
         })
 
     },
@@ -99,6 +154,7 @@ module.exports = {
                 },
                 site: infoTemp.siteList
             }
+            info.site.liked = req.session.like[info.site.siteId] ? true : false;
         } else {
             info = null;
         }
@@ -157,6 +213,8 @@ module.exports = {
             for (let i = 0; i < info.length; i++) {
                 const infoItem = info[i];
                 const { cateId, cateName, cateIcon, cateIntro } = infoItem;
+                let site = infoItem.siteList;
+                site.liked = req.session.like[site.siteId] ? true : false;
                 infoTemp.push({
                     cate: {
                         cateId,
@@ -164,7 +222,7 @@ module.exports = {
                         cateIcon,
                         cateIntro
                     },
-                    site: infoItem.siteList
+                    site
                 });
             }
             info = infoTemp;
@@ -305,6 +363,7 @@ module.exports = {
                     const siteItem = r.siteList[i];
                     if (siteItem.siteId == siteId) {
                         site = siteItem;
+                        site.liked = req.session.like[siteItem.siteId] ? true : false;
                         break;
                     }
                 }
@@ -376,24 +435,9 @@ module.exports = {
                 }
             } else {
 
-                // 简单粗暴的返回data重构
-                const {cateId, cateName, cateIcon, cateIntro} = r;
-                let cate = {cateId, cateName, cateIcon, cateIntro};
-                let site = {};
-                for (let i = 0; i < r.siteList.length; i++) {
-                    const siteItem = r.siteList[i];
-                    if (siteItem.siteId == siteId) {
-                        site = siteItem;
-                        break;
-                    }
-                }
                 respData = {
                     code: 200,
-                    msg: null,
-                    data: {
-                        cate,
-                        site
-                    }
+                    msg: null
                 }
             }
 

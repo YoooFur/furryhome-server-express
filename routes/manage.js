@@ -15,7 +15,7 @@ const
 const router = express.Router();
 
 
-router.get('/site', siteCtrl.getSiteList)
+// router.get('/site', siteCtrl.getSiteList)
 
 
 module.exports = router;

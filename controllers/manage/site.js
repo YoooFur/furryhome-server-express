@@ -13,11 +13,11 @@ const {Request, Response} = require('express');
 module.exports = {
 
     /**
-     * 获取站点列表
-     * @param {Response} req 
-     * @param {*} res 
+     * 增加站点你分类
+     * @param {Request} req 
+     * @param {Response} res 
      */
-    getSiteList: async (req, res) => {
+    addSiteCate: async (req, res) => {
         
     }
 }
