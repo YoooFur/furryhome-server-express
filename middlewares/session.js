@@ -18,8 +18,8 @@ module.exports = {
 
         if (!req.session.u) {
             req.session.u = 1;
-            req.session.view = [];
-            req.session.like = [];
+            req.session.view = {};
+            req.session.like = {};
         }
     
         // 跳回

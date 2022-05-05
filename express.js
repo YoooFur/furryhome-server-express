@@ -39,6 +39,10 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(session({
     secret: config.secret,
+    name: 'sid',
+    cookie: {
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    },
     store: redis.sessionStore
 }))
 
