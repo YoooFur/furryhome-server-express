@@ -13,6 +13,12 @@ console.log(`
    / __/ / /_/ / /  / /  / /_/ / __  / /_/ / / / / / /  __/
   /_/    \\__,_/_/  /_/   \\__, /_/ /_/\\____/_/ /_/ /_/\\___/ 
                        /____/       
+                       
 
-${process.env.dev ? "当前为开发环境" : ""}
+      Author: 玖叁 @colour93
+      GitHub: https://github.com/colour93
+
 `)
+if (process.env.dev) {
+      console.log("当前为开发环境");
+}

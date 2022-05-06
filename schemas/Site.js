@@ -10,23 +10,42 @@
  */
 
 const {Schema, model} = require('mongoose');
+const Counter = require('./Counter');
 
-module.exports = model('Site', new Schema({
-    cateName: String,
-    cateId: {
-        type: Number,
+const schema = new Schema({
+    cateName: {
+        type: String,
+        required: true,
         unique: true
     },
-    cateIcon: String,
-    cateIntro: String,
+    cateId: {
+        type: Number,
+        required: true,
+        unique: true
+    },
+    /**
+     * 使用 草莓图标库
+     * http://www.chuangzaoshi.com/icon/
+     * https://github.com/xiangsudian/caomei
+     */
+    cateIcon: {
+        type: String,
+        default: "czs-network"
+    },
+    cateIntro: {
+        type: String,
+        default: "还没有简介欸"
+    },
     siteList: [{
         siteName: {
             type: String,
-            required: true
+            unique: true,
+            sparse: true
         },
         siteId: {
-            type: Number,
-            unique: true
+            type: String,
+            unique: true,
+            sparse: true
         },
         siteIntro: {
             type: String,
@@ -34,11 +53,12 @@ module.exports = model('Site', new Schema({
         },
         siteFavicon: {
             type: String,
-            default: "https://default.ico"
+            default: "https://fur233.oss-cn-hangzhou.aliyuncs.com/common/default.png"
         },
         siteUrl: {
             type: String,
-            required: true
+            unique: true,
+            sparse: true
         },
         siteParam: String,
         siteViews: {
@@ -51,8 +71,18 @@ module.exports = model('Site', new Schema({
         },
         siteCreateTime: {
             type: Date,
-            default: new Date()
+            required: true
         },
         // active: Boolean
     }]
-}))
+});
+
+schema.plugin(require('@mylearningcloud/mongoose-beautiful-unique-validation'));
+
+schema.plugin(Counter.incPlugin, {
+    flag: 'Site',
+    key: 'cateName',
+    targetKey: 'cateId'
+});
+
+module.exports = model('Site', schema);

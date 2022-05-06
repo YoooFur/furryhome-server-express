@@ -135,7 +135,8 @@ module.exports = {
             },
             {
                 "$project": {
-                    "_id": 0
+                    "_id": 0,
+                    "siteList._id": 0
                 }
             }
         ])

@@ -14,8 +14,17 @@ const
 // 初始化路由
 const router = express.Router();
 
+router.post('/site/cate/add', siteCtrl.addSiteCate);
 
-// router.get('/site', siteCtrl.getSiteList)
+router.post('/site/cate/update', siteCtrl.updateSiteCate);
+
+router.post('/site/cate/delete', siteCtrl.deleteSiteCate);
+
+router.post('/site/add', siteCtrl.addSite);
+
+router.post('/site/update', siteCtrl.updateSite);
+
+router.post('/site/delete', siteCtrl.deleteSite);
 
 
 module.exports = router;

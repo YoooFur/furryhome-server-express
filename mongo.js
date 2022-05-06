@@ -9,6 +9,9 @@ const mongoose = require('mongoose');
 // 引入配置文件
 const {host, user, pwd, db} = require('./config.json').mongo;
 
+// 加载插件
+mongoose.plugin(require('@mylearningcloud/mongoose-beautiful-unique-validation'));
+
 // 连接操作
 function connect () {
     return new Promise ((resolve, reject) => {

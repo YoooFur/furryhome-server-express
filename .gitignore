@@ -1,9 +1,12 @@
 # node modules
 node_modules
-package_lock.json
+package-lock.json
 
 # config
 config.json
 
 # macOS temp file
 .DS_Store
+
+# vscode
+.vscode
