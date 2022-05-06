@@ -9,12 +9,15 @@ const express = require('express');
 // 引入下级路由
 const 
     rootRouter = require('./root'),
-    manageRouter = require('./manage');
+    manageRouter = require('./manage'),
+    authRouter = require('./auth');
 
 // 初始化路由
 const router = express.Router();
 
 router.use('/', rootRouter);
+
+router.use('/auth', authRouter);
 
 if (process.env.dev) {
     router.use('/manage', manageRouter);

@@ -6,7 +6,6 @@
 
 // 引入类型
 const { Request, Response } = require('express');
-const { default: mongoose } = require('mongoose');
 
 // 引入数据模型
 const Site = require('../schemas/Site');

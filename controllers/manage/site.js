@@ -105,9 +105,9 @@ module.exports = {
             cateId: id
         }, {
             $set: {
-                name,
-                intro,
-                icon
+                cateName: name,
+                cateIntro: intro,
+                cateIcon: icon
             }
         }, {
             new: true,
