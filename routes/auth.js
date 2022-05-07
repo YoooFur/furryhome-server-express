@@ -7,9 +7,6 @@
 // 引入库
 const express = require('express');
 
-// 引入配置文件
-const {oauth} = require('../config.json');
-
 // 引入控制器
 const
     githubCtrl = require('../controllers/auth/github');
@@ -19,22 +16,34 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
 
-    let resp = "";
+    if (!req.session.userInfo) {
+        res.send({
+            code: -401,
+            msg: "未登录",
+            data: {
+                oauth: {
+                    github: '/auth/oauth/github?redirectURI=/auth'
+                }
+            }
+        })
+        return;
+    };
 
-    if (req.session.userInfo) {
-        resp += `<p>欢迎您 ${req.session.userInfo.name}</p>`;
-    }
+    res.send({
+        code: 200,
+        msg: `${req.session.userInfo.name}，欢迎访问 FurryHome`,
+        data: req.session.userInfo
+    });
+})
 
-    resp += `<a href="/auth/oauth/github?redirectURI=https://api.furryhome.cn:19393/auth">GitHub</a>`;
-
-    res.send(resp);
+router.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/auth');
 })
 
 // OAuth
 
 // ============= GitHub =============
-
-const {github} = oauth;
 
 router.get('/oauth/github', githubCtrl.request);
 

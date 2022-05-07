@@ -7,15 +7,15 @@
 // 引入类型
 const { Request, Response } = require('express');
 
-// 引入数据模型
-// const Site = require('../schemas/Site');
-
 // 引入库
 const axios = require('axios');
 
 // 引入配置文件
 const {github} = require('../../config.json').oauth;
 let {proxy} = require('../../config.json');
+
+// 引入auth控制器
+const authCtrl = require('./auth');
 
 // 判断运行环境，切换代理
 proxy = process.env.dev ? proxy.dev : proxy.prod;
@@ -36,15 +36,22 @@ module.exports = {
             
             // 以及校验
             try {
-                let redirectURI = new URL (req.query.redirectURI);
-                
-                if ( redirectURI.hostname.substring(redirectURI.hostname.length - 12) != 'furryhome.cn' ) {
-                    res.send({
-                        code: -400,
-                        msg: "redirectURI有误，请勿填写非业务域名"
-                    });
-                    return;
+
+                // 先判断是否纯路径
+                const pathReg = /^\/\w+\?{0,1}((\w+=\S+&)*(\w+=\w+){0,1}){0,1}(\/\w+)*$/;
+                if (!pathReg.test(req.query.redirectURI)) {
+                    
+                    let redirectURI = new URL (req.query.redirectURI);
+                    
+                    if ( redirectURI.hostname.substring(redirectURI.hostname.length - 12) != 'furryhome.cn' ) {
+                        res.send({
+                            code: -400,
+                            msg: "redirectURI有误，请勿填写非业务域名"
+                        });
+                        return;
+                    }
                 }
+
 
             } catch (error) {
 
@@ -112,7 +119,7 @@ module.exports = {
             });
             
         } catch (error) {
-            console.erro(error);
+            console.error(error);
             res.send({
                 code: -410,
                 msg: "服务器请求出错，请返回首页重试"
@@ -120,14 +127,12 @@ module.exports = {
             return;
         }
 
-        // 把信息和session绑定
-        const {name, avatar_url, id, login} = r.data;
-        req.session.userInfo = {
-            name,
-            avatar_url,
-            id,
-            login
-        }
+        // 使用GitHub登录信息访问用户信息数据库
+        const {name, avatar_url, id, login, email} = r.data;
+        const userInfoObj = {name, avatar_url, id, login, email};
+
+        // 使用通用身份认证换取用户信息
+        await authCtrl.oauth('github', userInfoObj, req);
 
         // 读取session中的重定向
         const redirectURI = req.session.redirectURI || "https://furryhome.cn";

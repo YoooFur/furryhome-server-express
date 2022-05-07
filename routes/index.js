@@ -19,8 +19,6 @@ router.use('/', rootRouter);
 
 router.use('/auth', authRouter);
 
-if (process.env.dev) {
-    router.use('/manage', manageRouter);
-}
+router.use('/manage', manageRouter);
 
 module.exports = router;
