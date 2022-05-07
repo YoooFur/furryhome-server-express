@@ -3,7 +3,7 @@
  */
 
 // 初始化环境变量
-process.env.dev = (process.env.NODE_ENV == 'development' ? true : false );
+if (process.env.NODE_ENV == 'development') process.env.dev = 1;
 
 console.log(`
 
