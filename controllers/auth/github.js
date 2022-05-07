@@ -18,7 +18,11 @@ let {proxy} = require('../../config.json');
 const authCtrl = require('./auth');
 
 // 判断运行环境，切换代理
-proxy = process.env.dev ? proxy.dev : proxy.prod;
+if (proxy.active) {
+    proxy = process.env.dev ? proxy.dev : proxy.prod;
+} else {
+    proxy = null;
+}
 
 module.exports = {
 
