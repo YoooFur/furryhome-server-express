@@ -10,6 +10,7 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const cors = require('cors');
 
 const redis = require('./redis');
 
@@ -33,6 +34,9 @@ if (config) {
 
 // 初始化 Express 实例
 const app = express();
+
+// 处理跨域
+app.use(cors());
 
 // 使用数据处理中间件
 app.use(bodyParser.json());
