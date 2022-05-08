@@ -47,7 +47,8 @@ module.exports = {
             result = await Site.create({
                 cateName: name,
                 cateIntro: intro,
-                cateIcon: icon
+                cateIcon: icon,
+                operator: req.session.userInfo.id
             })
         } catch (error) {
             if (error._message == "Validation failed") {
@@ -107,7 +108,8 @@ module.exports = {
             $set: {
                 cateName: name,
                 cateIntro: intro,
-                cateIcon: icon
+                cateIcon: icon,
+                operator: req.session.userInfo.id
             }
         }, {
             new: true,
@@ -276,7 +278,8 @@ module.exports = {
                     siteFavicon: favicon,
                     siteUrl: url,
                     siteParam: param,
-                    siteCreateTime: Date.now()
+                    siteCreateTime: Date.now(),
+                    operator: req.session.userInfo.id
                 }
             }
         }, {
@@ -380,7 +383,8 @@ module.exports = {
                 "siteList.$.siteUrl": url,
                 "siteList.$.siteFavicon": favicon,
                 "siteList.$.siteIntro": intro,
-                "siteList.$.siteParam": param
+                "siteList.$.siteParam": param,
+                "siteList.$.operator": req.session.userInfo.id
             }
         }, {
             new: true

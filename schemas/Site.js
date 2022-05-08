@@ -9,6 +9,12 @@
  * 想起来再写注释吧
  */
 
+/**
+ * 2022/5/8
+ * 严重依赖于隔壁 Couter 集合
+ * 切记清空该集合记得清 Counter 中对应文档
+ */
+
 const {Schema, model} = require('mongoose');
 const Counter = require('./Counter');
 
@@ -73,8 +79,16 @@ const schema = new Schema({
             type: Date,
             required: true
         },
+        operator: {
+            type: Number,
+            required: true
+        }
         // active: Boolean
-    }]
+    }],
+    operator: {
+        type: Number,
+        required: true
+    }
 });
 
 schema.plugin(require('@mylearningcloud/mongoose-beautiful-unique-validation'));

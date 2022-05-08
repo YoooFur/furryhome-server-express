@@ -10,7 +10,6 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const cors = require('cors');
 
 const redis = require('./redis');
 
@@ -36,7 +35,14 @@ if (config) {
 const app = express();
 
 // 处理跨域
-app.use(cors());
+const allowCors = (req, res, next) => {
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Credentials','true');
+    next();
+};
+app.use(allowCors);
 
 // 使用数据处理中间件
 app.use(bodyParser.json());
@@ -45,7 +51,8 @@ app.use(session({
     secret: config.secret,
     name: 'sid',
     cookie: {
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        domain: ".furryhome.cn"
     },
     store: redis.sessionStore
 }))
@@ -98,5 +105,5 @@ function onListening() {
     let bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
-console.log(`HTTP 服务监听本地 ${bind}`);
+    console.log(`HTTP 服务监听本地 ${bind}`);
 }
