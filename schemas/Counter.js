@@ -3,7 +3,7 @@
  * 自增计数器集合
  */
 
-const {Schema, model} = require('mongoose');
+const { Schema, model } = require('mongoose');
 
 const couterSchema = new Schema({
     flag: {
@@ -33,7 +33,7 @@ const counterModel = model('Counter', couterSchema);
  * @param {Schema} targetSchema
  * @param {object} options flag key targetKey
  */
-function incPlugin (targetSchema, options) {
+function incPlugin(targetSchema, options) {
 
     // 增加字段
     targetSchema.add({
@@ -42,7 +42,7 @@ function incPlugin (targetSchema, options) {
 
     // 监听预处理
     targetSchema.pre('validate', async function (next) {
-        const {flag, key, targetKey} = options;
+        const { flag, key, targetKey } = options;
 
         // 查找是否存在
         r = await counterModel.findOne({
@@ -89,12 +89,37 @@ function incPlugin (targetSchema, options) {
  * 自增函数
  * @param {string} collectionName
  */
- const incFunction = (collectionName) => {
+const incFunction = (collectionName) => {
 
+}
+
+/**
+ * 删除插件
+ * @param {Schema} targetSchema
+ * @param {object} options flag targetKey
+ */
+ function decPlugin(targetSchema, options) {
+
+    // 监听预处理
+    targetSchema.pre('deleteOne', async function (next) {
+        const { flag, targetKey } = options;
+
+        // 删文档
+        r = await counterModel.updateOne({flag}, {
+            $pull: {
+                docuList: {
+                    id: this['_conditions'][targetKey]
+                }
+            }
+        })
+
+        next();
+    })
 }
 
 module.exports = {
     incPlugin,
+    decPlugin,
     incFunction,
     counterModel
 }

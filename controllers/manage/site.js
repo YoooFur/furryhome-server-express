@@ -5,7 +5,7 @@
  */
 
 // 引入库
-const {simpleflake} = require("simpleflakes");
+const { simpleflake } = require('simpleflakes');
 
 // 引入类型
 const { Request, Response } = require('express');
@@ -60,7 +60,7 @@ module.exports = {
                 return;
             }
         }
-        
+
         delete result._id;
         delete result.__v;
 
@@ -102,22 +102,34 @@ module.exports = {
         }
 
         // 执行更新操作
-        r = await Site.findOneAndUpdate({
-            cateId: id
-        }, {
-            $set: {
-                cateName: name,
-                cateIntro: intro,
-                cateIcon: icon,
-                operator: req.session.userInfo.id
+        let r;
+        try {
+            r = await Site.findOneAndUpdate({
+                cateId: id
+            }, {
+                $set: {
+                    cateName: name,
+                    cateIntro: intro,
+                    cateIcon: icon,
+                    operator: req.session.userInfo.id
+                }
+            }, {
+                new: true,
+                projection: {
+                    _id: 0,
+                    __v: 0
+                }
+            })
+        } catch (error) {
+            if (error._message == "Validation failed") {
+                res.send({
+                    code: -422,
+                    msg: "数据验证失败",
+                    data: error.errors
+                })
+                return;
             }
-        }, {
-            new: true,
-            projection: {
-                _id: 0,
-                __v: 0
-            }
-        })
+        }
 
         if (!r) {
             res.send({
@@ -140,7 +152,7 @@ module.exports = {
      * @param {Request} req
      * @param {Response} res
      */
-     deleteSiteCate: async (req, res) => {
+    deleteSiteCate: async (req, res) => {
 
         // 校验传输数据完整性及其类型
         const {
@@ -149,7 +161,7 @@ module.exports = {
         } = req.body;
 
         if (
-            (typeof id != 'number' || !id) || 
+            (typeof id != 'number' || !id) ||
             (typeof force != 'boolean' && force)
         ) {
             res.send({
@@ -163,7 +175,7 @@ module.exports = {
         if (!force) {
 
             // 检查欲删除的分类是否为空
-            result = await Site.findOne({cateId: id});
+            result = await Site.findOne({ cateId: id });
 
             if (!result) {
                 res.send({
@@ -184,7 +196,7 @@ module.exports = {
         }
 
         // 删除整个集合
-        originDoc = await Site.findOne({cateId: id});
+        originDoc = await Site.findOne({ cateId: id });
         r = await TrashBin.create({
             key: 'sites',
             type: 'cate',
@@ -195,7 +207,7 @@ module.exports = {
             cateId: id
         })
 
-        if (!r.deletedCount) {
+        if (r.deletedCount) {
             console.log(`删除站点分类: ${id}. ${result.cateName}`);
             res.send({
                 code: 200,
@@ -267,24 +279,37 @@ module.exports = {
         const flake = simpleflake();
         siteId = flake.toString();
 
-        r = await Site.findOneAndUpdate({
-            cateId
-        }, {
-            $addToSet: {
-                siteList: {
-                    siteId,
-                    siteName: name,
-                    siteIntro: intro,
-                    siteFavicon: favicon,
-                    siteUrl: url,
-                    siteParam: param,
-                    siteCreateTime: Date.now(),
-                    operator: req.session.userInfo.id
+        let r;
+        try {
+            r = await Site.findOneAndUpdate({
+                cateId
+            }, {
+                $addToSet: {
+                    siteList: {
+                        siteId,
+                        siteName: name,
+                        siteIntro: intro,
+                        siteFavicon: favicon,
+                        siteUrl: url,
+                        siteParam: param,
+                        siteCreateTime: Date.now(),
+                        operator: req.session.userInfo.id
+                    }
                 }
+            }, {
+                new: true
+            });
+        } catch (error) {
+            if (error._message == "Validation failed") {
+                res.send({
+                    code: -422,
+                    msg: "数据验证失败",
+                    data: error.errors
+                })
+                return;
             }
-        }, {
-            new: true
-        });
+        }
+
 
         if (!r) {
             res.send({
@@ -295,8 +320,8 @@ module.exports = {
         };
 
         // 简单粗暴的返回data重构
-        const {cateName, cateIcon, cateIntro} = r;
-        let cate = {cateId, cateName, cateIcon, cateIntro};
+        const { cateName, cateIcon, cateIntro } = r;
+        let cate = { cateId, cateName, cateIcon, cateIntro };
         let site = {};
         for (let i = 0; i < r.siteList.length; i++) {
             const siteItem = r.siteList[i];
@@ -390,7 +415,7 @@ module.exports = {
             new: true
         })
 
-        
+
         if (!r) {
             res.send({
                 code: 404,
@@ -400,8 +425,8 @@ module.exports = {
         };
 
         // 简单粗暴的返回data重构
-        const {cateId, cateName, cateIcon, cateIntro} = r;
-        let cate = {cateId, cateName, cateIcon, cateIntro};
+        const { cateId, cateName, cateIcon, cateIntro } = r;
+        let cate = { cateId, cateName, cateIcon, cateIntro };
         let site = {};
         for (let i = 0; i < r.siteList.length; i++) {
             const siteItem = r.siteList[i];
@@ -497,7 +522,7 @@ module.exports = {
         }
 
         if (r.modifiedCount) {
-            console.log(`删除站点: ${id}. ${originDoc.siteList.siteName}`);
+            console.log(`删除站点: ${id}. ${originDoc[0].siteList.siteName}`);
             res.send({
                 code: 200,
                 msg: `已删除 ${r.modifiedCount} 个站点`
