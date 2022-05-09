@@ -99,4 +99,9 @@ schema.plugin(Counter.incPlugin, {
     targetKey: 'cateId'
 });
 
+schema.plugin(Counter.decPlugin, {
+    flag: 'Site',
+    targetKey: 'cateId'
+})
+
 module.exports = model('Site', schema);
