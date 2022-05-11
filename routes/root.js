@@ -20,10 +20,27 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
-    res.send('ok');
+    res.send({
+        code: 200,
+        msg: "欢迎访问 FurryHome 福瑞之家",
+        data: {
+            index: "https://furryhome.cn",
+            document: "https://doc.furryhome.cn",
+            github: "https://github.com/YoooFur/furryhome-server-express"
+        },
+        link: {
+            YoooFur: "https://yooofur.com",
+            FurDevsCN: "https://furdevs.cn",
+        },
+        FurryHome: 'beta-0.1.0510'
+    })
 })
 
 router.use('/', verifySession.generate);
+
+router.get('/favicon.ico', (req, res) => {
+    res.redirect('https://fur233.oss-cn-hangzhou.aliyuncs.com/common/furryhome_white.png');
+})
 
 router.get('/site/list', siteCtrl.getSiteList);
 
