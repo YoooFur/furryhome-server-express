@@ -25,7 +25,7 @@ module.exports = {
         // 获取列表
         let list = await Site.find(null, {
             "_id": 0
-        })
+        }).sort({cateId: 1});
 
         let resultList = [];
 
@@ -202,6 +202,11 @@ module.exports = {
             { 
                 "$project" : { 
                     "_id" : 0
+                }
+            },
+            {
+                "$sort": {
+                    "siteList.siteCreateTime": 1
                 }
             }
         ])
